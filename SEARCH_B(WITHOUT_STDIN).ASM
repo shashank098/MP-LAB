@@ -1,15 +1,15 @@
 ; PROGRAM :: ASSEMBLY LANGUAGE PROGRAM TO SEARCH A KEY ELEMENT IN A LIST
 ;            OF 'n' NUMBER USING THE BINARY SEARCH ALGORITHM
 
-.MODEL SMALL; small is a memory model
+.MODEL SMALL                   ; small is a memory model
 
-; MACRO TO DISPLAY THE MESSAGE....
+                            ; MACRO TO DISPLAY THE MESSAGE....
 
 
 
-DISPLAY MACRO MSG
-        LEA DX,MSG
-        MOV AH,09H
+DISPLAY MACRO MSG               
+        LEA DX,MSG          ;load effective address in  DX
+        MOV AH,09H           ; 09H is a function under INT 21H to display a set of words
         INT 21H;
 ENDM
 
@@ -28,15 +28,15 @@ MSG2 DB 0DH, 0AH, "SEARCH FAILED !! ELEMENT NOT FOUND IN LIST.. $"
 
 .CODE
 START : MOV AX, @DATA
-        MOV DS, AX
+        MOV DS, AX                  
 
         MOV CH, NUMBER-1                ;HIGH VALUE...
         MOV CL, 00H                     ;LOW VALUE
 AGAIN : MOV SI, OFFSET LIST
         XOR AX, AX
         CMP CL, CH
-        JE NEXT
-        JNC FAILED
+        JE NEXT                         ;  jump if CL=CH
+        JNC FAILED                      ;  jump if not carry 
 NEXT:   MOV AL, CL
         ADD AL, CH
         SHR AL, 01H             ; DIVIDE BY 2
@@ -46,13 +46,13 @@ NEXT:   MOV AL, CL
         MOV AL, DS:[BP][SI]
         CMP AL, KEY                       ;COMPARE KEY AND A[i]
         JE SUCCESS                        ;IF EQUAL, DISPLAY SUCCESS MESSAGE
-        JC INCLOW
+        JC INCLOW                           ; jump if carry 
         MOV CH, BL                        ;IF KEY&gT;A[I] SHIFT HIGH
-        DEC CH
+        DEC CH                              ; decrement CH by 1
         JMP AGAIN
 
 INCLOW: MOV CL, BL                        ;IF KEY&lT;A[i] SHIFT LOW
-        INC CL
+        INC CL                              ; increment CL by 1
         JMP AGAIN
 
 SUCCESS:mov al,key
@@ -74,6 +74,6 @@ FAILED: mov al,key
 FINAL : mov ah,01h
         int 21h
         
-        MOV AH,4CH
+        MOV AH,4CH              ; exit function   
         INT 21H
 END START
